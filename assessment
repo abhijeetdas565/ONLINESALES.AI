@@ -1,0 +1,110 @@
+Task-1 SQL
+
+In the attachment above, use each worksheet as a table in a relational database and write an SQL query that generates the output report
+
+SELECT d.DEPT_NAME, AVG(s.MONTHLY_SALARY) AS AVG_MONTHLY_SALARY
+FROM Department d
+JOIN Employee e ON d.DEPT_ID = e.DEPT_ID
+JOIN Salary s ON e.EMP_ID = s.EMP_ID
+GROUP BY d.DEPT_ID, d.DEPT_NAME
+ORDER BY AVG_MONTHLY_SALARY DESC
+LIMIT 3;
+
+
+
+
+
+
+Task-2 Scripting
+With the same attachment, use each worksheet as a CSV file and write a script (Bash or Python) that generates the same report. Data is to be read from the CSV files not from a database.
+
+
+import csv
+
+# Read department data from CSV file
+with open('department.csv', 'r') as dept_file:
+    dept_data = list(csv.reader(dept_file))
+
+# Read employee data from CSV file
+with open('employee.csv', 'r') as emp_file:
+    emp_data = list(csv.reader(emp_file))
+
+# Read salary data from CSV file
+with open('salary.csv', 'r') as salary_file:
+    salary_data = list(csv.reader(salary_file))
+
+# Create a dictionary to store department-wise salary sum and count
+dept_salaries = {}
+
+# Calculate department-wise salary sum and count
+for row in salary_data:
+    emp_id = row[0]
+    salary = float(row[1])
+
+    # Get department ID for the employee
+    for emp_row in emp_data:
+        if emp_row[0] == emp_id:
+            dept_id = emp_row[1]
+            break
+
+    # Add salary to the department's sum
+    if dept_id in dept_salaries:
+        dept_salaries[dept_id]['sum'] += salary
+        dept_salaries[dept_id]['count'] += 1
+    else:
+        dept_salaries[dept_id] = {'sum': salary, 'count': 1}
+
+# Calculate average monthly salary for each department
+dept_avg_salaries = {}
+for dept_id, data in dept_salaries.items():
+    avg_salary = data['sum'] / data['count']
+    dept_avg_salaries[dept_id] = avg_salary
+
+# Sort departments by average monthly salary
+sorted_depts = sorted(dept_avg_salaries.items(), key=lambda x: x[1], reverse=True)
+
+# Print top 3 departments along with their average monthly salary
+for i, (dept_id, avg_salary) in enumerate(sorted_depts[:3], start=1):
+    for dept_row in dept_data:
+        if dept_row[0] == dept_id:
+            dept_name = dept_row[1]
+            break
+    print(f"DEPT_NAME: {dept_name}")
+    print(f"AVG_MONTHLY_SALARY (USD): {avg_salary}")
+    print()
+
+
+
+
+
+Task-3 Debugging
+
+
+Given below is a Bash / Python script that performs following computation on an integer input (n):
+If n is less than 10: Calculate its Square
+Example: 4 => 16
+If n is between 10 and 20: Calculate the factorial of (n-10)
+Example: 15 => 120
+If n is greater than 20: Calculate the sum of all integers between 1 and (n-20)
+Example: 25 => 15
+
+The task is to identify the bugs in the script, fix them and share the new script. Only one of the two scripts required Bash or Python. Hint: You can correct the script by only changing 3-4 characters.
+
+def compute(n):
+    if n < 10:
+        out = n ** 2
+    elif n < 20:
+        out = 1
+        for i in range(1, n-9):
+            out *= i
+    else:
+        out = 0
+        for i in range(1, n-19):
+            out += i
+    print(out)
+
+n = int(input("Enter an integer: "))
+compute(n)
+
+
+
